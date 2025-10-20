@@ -16,6 +16,8 @@ Usage examples:
 import time
 import argparse
 from datetime import datetime
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 import os
 
 import numpy as np
@@ -46,6 +48,18 @@ def select_codec_by_ext(filename, override=None):
 
 def timestamped_name(prefix="screenshot", ext=".png"):
     return f"{prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
+
+def upload_to_drive(filepath):
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()  # runs once to authenticate
+    drive = GoogleDrive(gauth)
+
+    filename = os.path.basename(filepath)
+    file_drive = drive.CreateFile({'title': filename})
+    file_drive.SetContentFile(filepath)
+    file_drive.Upload()
+    print(f"Uploaded {filename} to Google Drive.")
+    # upload_to_drive({filename})
 
 def main():
     args = parse_args()
